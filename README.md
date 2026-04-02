@@ -21,5 +21,11 @@ Aplikasi ini melakukan ekstraksi parameter akustik dari input audio untuk member
 2. Instal dependensi: `pip install numpy scipy sounddevice pyqt5 pyqtgraph`.
 3. Jalankan aplikasi: `python vocal_mesin_io.py`.
 
+## macOS Permissions Note
+Untuk pengguna macOS, pastikan langkah berikut telah dilakukan:
+1. **Microphone Access:** Berikan izin akses mikrofon pada `System Settings > Privacy & Security > Microphone`.
+2. **Gatekeeper:** Jika aplikasi diblokir, buka melalui `System Settings > Privacy & Security > Open Anyway`.
+3. **Executable Bit:** Gunakan `chmod +x <file_name>` jika muncul error 'Permission Denied'.
+
 ---
 © 2026 Developed by Rekambergerak - Yogyakarta, Indonesia.
