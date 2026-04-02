@@ -1,0 +1,53 @@
+name: Build Vocal Mesin Mac
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch: # Memungkinkan build manual dari browser/GitHub UI
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install System Dependencies
+        run: |
+          brew install portaudio # Diperlukan oleh library sounddevice
+
+      - name: Install Python Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install numpy scipy sounddevice pyqtgraph PyQt5 pyinstaller
+
+      - name: Build Executable with PyInstaller
+        run: |
+          # --windowed: Untuk aplikasi GUI tanpa terminal (macOS .app bundle)
+          # --noconfirm: Timpa folder build yang ada
+          # --clean: Bersihkan cache sebelum build
+          pyinstaller --noconfirm --windowed --clean \
+            --name "VocalMaster_RBLAB_v1.8.0" \
+            --add-data "vocal_mesin_mac.py:." \
+            vocal_mesin_mac.py
+
+      - name: Create DMG (Disk Image)
+        run: |
+          # Menggunakan hdiutil bawaan macOS untuk membuat installer .dmg
+          mkdir -p dist/dmg
+          hdiutil create -volname "VocalMaster_Install" \
+                         -srcfolder dist/VocalMaster_RBLAB_v1.8.0.app \
+                         -ov -format UDZO \
+                         dist/dmg/VocalMaster_Mac_v1.8.0.dmg
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: VocalMaster-MacOS-Build
+          path: dist/dmg/*.dmg
